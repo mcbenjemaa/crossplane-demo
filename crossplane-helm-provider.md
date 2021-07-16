@@ -41,10 +41,11 @@ Helm provider uses a custom resource `ProviderConfig` to identify the workload c
 Example:
 
 
-Create a secret of kind cluster and use it in minikube (or another kind cluster..)
+If working on external cluster:
+Create a secret of external cluster and use it in Mgmt cluster
 
 ```
-kubectl --context minikube create secret generic cluster-a-config --from-literal=kubeconfig="$(kubectl config view --minify --raw)"
+kubectl --context <mgmt-cluster> create secret generic cluster-config --from-literal=kubeconfig="$(kubectl --context <workload-cluster> config view --minify --raw)"
 ```
 
 Create `ProviderConfig`
@@ -58,57 +59,33 @@ spec:
   credentials:
     source: Secret
     secretRef:
-      name: cluster-kind-config
+      name: cluster-config
       namespace: default
       key: kubeconfig
 ```
 
-Apply to cluster A
+Apply to cluster Mgmt cluster
+``` 
+ k apply -f manifests/provider-helm/provider-config-external.yaml
+```
+
+If you want to manage helm releases on the same cluster.
+you need to apply 
 
 ```
-cat <<EOF | kubectl apply -f -
-apiVersion: helm.crossplane.io/v1beta1
-kind: ProviderConfig
-metadata:
-  name: helm-provider
-spec:
-  credentials:
-    source: Secret
-    secretRef:
-      name: cluster-kind-config
-      namespace: default
-      key: kubeconfig
-EOF
+SA=$(kubectl -n crossplane-system get sa -o name | grep provider-helm | sed -e 's|serviceaccount\/|crossplane-system:|g')
+kubectl create clusterrolebinding provider-helm-admin-binding --clusterrole cluster-admin --serviceaccount="${SA}"
+kubectl apply -f manifests/provider-helm/provider-config.yaml
 ```
 
 Create a `Release` resource
 
 ```
-cat <<EOF | kubectl apply -f -
-apiVersion: helm.crossplane.io/v1beta1
-kind: Release
-metadata:
-  name: opendistro
-spec:
-  forProvider:
-    chart:
-      name: opendistro
-      repository: https://mcbenjemaa.github.io/opendistro-build
-      version: 1.13.3
-    namespace: default
-    values:
-      kibana:
-        service:
-          type: ClusterIP
-    set:
-      - name: kibana.externalPort
-        value: "80"
-  providerConfigRef:
-    name: helm-provider
-EOF
+kubectl apply -f manifests/provider-helm/release.yaml
 ```
 
 
+Workflow for external cluster:
 ```
 In cluster B:
 
@@ -121,8 +98,7 @@ Provider helm will go and deploy the helm release into cluster A.
 
 
 
-
-
+Release Resource:
 ```
 KIND:     Release
 VERSION:  helm.crossplane.io/v1beta1
