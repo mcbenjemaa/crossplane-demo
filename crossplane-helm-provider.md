@@ -64,13 +64,13 @@ spec:
       key: kubeconfig
 ```
 
-Apply to cluster Mgmt cluster
+Apply to Mgmt cluster
 ``` 
  k apply -f manifests/provider-helm/provider-config-external.yaml
 ```
 
 If you want to manage helm releases on the same cluster.
-you need to apply 
+you need to execute 
 
 ```
 SA=$(kubectl -n crossplane-system get sa -o name | grep provider-helm | sed -e 's|serviceaccount\/|crossplane-system:|g')
@@ -98,7 +98,105 @@ Provider helm will go and deploy the helm release into cluster A.
 
 
 
-Release Resource:
+The `Release` resource is great and flexible for extending and defining multiple sources for helm values
+
+Example:
+```
+apiVersion: helm.crossplane.io/v1alpha1
+kind: Release
+metadata:
+  name: wordpress-example
+spec:
+  forProvider:
+    chart:
+      name: wordpress
+      repository: https://charts.bitnami.com/bitnami
+      version: 9.3.19
+    namespace: wordpress
+    values:
+      mariadb:
+        enabled: false
+      externaldb:
+        enabled: true
+    valuesFrom:
+    - configMapKeyRef:
+        name: wordpress-defaults
+        namespace: prod
+        key: values.yaml
+        optional: false
+    set:
+    - name: wordpressBlogName
+      value: "Hello Crossplane"
+    - name: externalDatabase.host
+      valueFrom:
+        secretKeyRef:
+          name: dbconn
+          key: host
+    - name: externalDatabase.user
+      valueFrom:
+        secretKeyRef:
+          name: dbconn
+          key: username
+    - name: externalDatabase.password
+      valueFrom:
+        secretKeyRef:
+          name: dbconn
+          key: password
+    patchesFrom:
+    - configMapKeyRef:
+        name: labels
+        namespace: prod
+        key: patches.yaml
+        optional: false
+    - configMapKeyRef:
+        name: wordpress-nodeselector
+        namespace: prod
+        key: patches.yaml
+        optional: false
+    - secretKeyRef:
+        name: image-pull-secret-patch
+        namespace: prod
+        key: patches.yaml
+        optional: false
+  providerConfigRef: 
+    name: cluster-1-provider
+  reclaimPolicy: Delete
+```
+
+##### Value Overrides
+There are multiple ways to provide value overrides and final values will be composed with the following precedence:
+
+* `spec.forProvider.valuesFrom` array, items with increasing precedence
+* `spec.forProvider.values`
+* `spec.forProvider.set` array, items with increasing precedence
+
+
+##### Post Rendering Patches
+It will be possible to provide post rendering patches which will make last mile configurations using post rendering option of Helm. `spec.forProvider.patchesFrom` array will be used to specify patch definitions satisfying kustomizes patchTransformer interface.
+
+Example:
+
+``` 
+patches:
+- patch: |-
+    - op: replace
+      path: /some/existing/path
+      value: new value
+      target:
+      kind: MyKind
+      labelSelector: "env=dev"
+- patch: |-
+    - op: add
+      path: /spec/template/spec/nodeSelector
+      value:
+      node.size: really-big
+      aws.az: us-west-2a
+      target:
+      kind: Deployment
+      labelSelector: "env=dev"
+```
+
+Release Resource Description:
 ```
 KIND:     Release
 VERSION:  helm.crossplane.io/v1beta1
