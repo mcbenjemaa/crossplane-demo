@@ -1,6 +1,6 @@
 ### Crossplane helm provider
 
-If you don't have crossplane installed yet, then head over installation guide [install-crossplane](install-crossplane.md)
+If you don't have crossplane installed yet, then head over to the installation guide [install-crossplane](install-crossplane.md)
 
 #### Install Helm provider
 Install
