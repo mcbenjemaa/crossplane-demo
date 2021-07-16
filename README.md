@@ -14,7 +14,18 @@ Crossplane extends your Kubernetes cluster, providing you with CRDs for any infr
 
 #### Quick start
 
-To get started with crossplane, you should install Crossplane controller first
+To get started with crossplane, you should install Crossplane controller first [install-crossplane](install-crossplane.md)
 
 
-you can use [sample-gcp](sample-gcp.md)
+As quick start guide you can head over [sample-gcp](sample-gcp.md)
+Yet, Another guide with helm provider [crossplane-helm-provider](crossplane-helm-provider.md)
+
+#### Crossplane configuration
+
+TBD
+
+
+#### Crossplane composite
+
+TBD
+
