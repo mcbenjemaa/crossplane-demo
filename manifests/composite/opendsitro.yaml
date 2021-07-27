@@ -1,0 +1,7 @@
+apiVersion: renault.fr/v1alpha1
+kind: Opendistro
+metadata:
+  name: my-opendistro-instance
+spec:
+  kibanaService: LoadBalancer
+  kibanaPort: 80
