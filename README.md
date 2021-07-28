@@ -52,4 +52,4 @@ A `Composition` specifies which resources a composite resource will be composed 
 `XRDs` and `Compositions` may be packaged and installed as a configuration. A configuration is a `package` of composition configuration that can easily be installed to Crossplane by creating a declarative `Configuration` resource, or by using `kubectl crossplane install configuration`.
 
 
-TBD
+[A simple demo to configuration](configuration.md)

@@ -1,0 +1,48 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: compositeopendistroinstances.renault.fr
+spec:
+  group: renault.fr
+  # The defined kind of composite resource.
+  names:
+    kind: CompositeOpendistro
+    plural: compositeopendistroinstances
+
+  claimNames:
+    kind: Opendistro
+    plural: opendistroinstances
+ 
+  versions:
+  - name: v1alpha1
+    served: true
+    referenceable: true
+    # Define the spec of the Resource
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object
+            properties:
+                kibanaPort:
+                  description: Kibana external Port
+                  type: integer
+                kibanaService:
+                  type: string
+                  enum: ["ClusterIP", "LoadBalancer"]
+            required:
+            - kibanaService
+
+          # The status subresource can be optionally defined in the XRD
+          # schema to allow observed fields from the composed resources
+          # to be set in the composite resource and claim.
+          status:
+            type: object
+            properties:
+              state:
+                description: If the Opendistro Ready or not
+                type: string
+              url:
+                description: Internal URL of the Opendistro client
+                type: string
