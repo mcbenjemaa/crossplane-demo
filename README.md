@@ -9,6 +9,7 @@ A list of hands-on with crossplane.
 Crossplane provides Declarative approach to infrastructure configuration and infrastructure management  that can be used to provision and manage any infrastructure on top of the K8s API.
 
 #### Crossplane
+
 Crossplane extends your Kubernetes cluster, providing you with CRDs for any infrastructure or managed service. Compose these granular resources into higher level abstractions that can be versioned, managed, deployed and consumed using your favorite tools and existing processes you've already integrated with your clusters.
 
 
@@ -25,6 +26,7 @@ Yet, Another guide with helm provider [crossplane-helm-provider](crossplane-helm
 #### Crossplane composite resources
 
 **TL;DR**
+
 The idea is to create custom resources with the composite resources (XRs), and the corresponding team could just identify a composite resource claim (XRC)
 that will satisfy the definition of the XR.
 
