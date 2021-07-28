@@ -29,7 +29,6 @@ Yet, Another guide with helm provider [crossplane-helm-provider](crossplane-helm
 
 The idea is to create custom resources with the composite resources (XRs), and the corresponding team could just identify a composite resource claim (XRC)
 that will satisfy the definition of the XR.
-
 This model has similarities to Persistent Volumes (PV) and Persistent Volume Claims (PVC) in Kubernetes.
 
 
@@ -40,6 +39,7 @@ it enables you to define new custom resources with schemas of your choosing. We 
 two special Crossplane resources to define and configure these new custom resources:
 
 A `CompositeResourceDefinition` (XRD) defines a new kind of composite resource, including its schema. An XRD may optionally offer a claim (XRC).
+
 A `Composition` specifies which resources a composite resource will be composed of, and how they should be configured. You can create multiple Composition options for each composite resource.
 
 

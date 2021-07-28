@@ -1,6 +1,6 @@
 ### Composition
 
-API Refernce: https://doc.crds.dev/github.com/crossplane/crossplane 
+API Reference: https://doc.crds.dev/github.com/crossplane/crossplane 
 
 
 ### Create the definition 
